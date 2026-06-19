@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FairSplit - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0d0d1a; font-family: 'Nunito', sans-serif; min-height: 100vh; padding-bottom: 90px; }
+
+    /* ── TOP HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #1a1a35 0%, #12122a 100%);
+      padding: 20px 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .user-info { display: flex; align-items: center; gap: 12px; }
+
+    .avatar {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, #e94560, #ff6b6b);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white;
+    }
+
+    .user-text h3 { font-size: 16px; font-weight: 800; color: white; }
+    .user-text p { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 600; }
+
+    .notif-btn {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer; position: relative;
+    }
+
+    /* ── BALANCE HERO CARD ── */
+    .hero-card {
+      background: linear-gradient(135deg, #e94560 0%, #c62a47 50%, #a01f38 100%);
+      border-radius: 24px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(233, 69, 96, 0.4);
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 150px; height: 150px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: 30px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+
+    .hero-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .hero-amount {
+      font-size: 42px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 4px;
+      letter-spacing: -1px;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 12px;
+    }
+
+    .hero-stat {
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-stat .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .hero-stat .stat-value {
+      font-size: 18px;
+      font-weight: 900;
+      color: white;
+    }
+
+    /* ── CONTENT ── */
+    .content { padding: 20px; }
+
+    /* ── QUICK ACTIONS ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .see-all {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e94560;
+      cursor: pointer;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .quick-action {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 14px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action:hover {
+      background: rgba(233,69,96,0.12);
+      border-color: rgba(233,69,96,0.3);
+      transform: translateY(-2px);
+    }
+
+    .quick-action .qa-icon {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .quick-action .qa-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ── GROUP CARDS ── */
+    .group-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .group-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: linear-gradient(135deg, #e94560, #c62a47);
+      border-radius: 4px 0 0 4px;
+    }
+
+    .group-card:hover {
+      background: rgba(233,69,96,0.07);
+      border-color: rgba(233,69,96,0.25);
+      transform: translateX(4px);
+    }
+
+    .group-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .group-icon {
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .group-icon.color1 { background: linear-gradient(135deg, rgba(233,69,96,0.25), rgba(233,69,96,0.1)); }
+    .group-icon.color2 { background: linear-gradient(135deg, rgba(100,160,255,0.25), rgba(100,160,255,0.1)); }
+    .group-icon.color3 { background: linear-gradient(135deg, rgba(100,220,130,0.25), rgba(100,220,130,0.1)); }
+    .group-icon.color4 { background: linear-gradient(135deg, rgba(255,180,50,0.25), rgba(255,180,50,0.1)); }
+    .group-icon.color5 { background: linear-gradient(135deg, rgba(200,100,255,0.25), rgba(200,100,255,0.1)); }
+
+    .group-details { flex: 1; }
+    .group-name { font-size: 16px; font-weight: 800; color: white; margin-bottom: 3px; }
+    .group-members { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 600; }
+
+    .group-arrow {
+      width: 32px; height: 32px;
+      background: rgba(233,69,96,0.12);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #e94560;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .group-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .group-stat { text-align: center; }
+    .group-stat .gs-value { font-size: 15px; font-weight: 800; }
+    .group-stat .gs-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 2px; }
+
+    .divider-dot { color: rgba(255,255,255,0.1); font-size: 20px; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+    }
+    .empty-state .es-icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 18px; font-weight: 800; color: white; margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 600; line-height: 1.5; }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,13,26,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 12px 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 50;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .nav-item.active { background: rgba(233,69,96,0.12); }
+    .nav-item .nav-icon { font-size: 20px; }
+    .nav-item .nav-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); }
+    .nav-item.active .nav-label { color: #e94560; }
+
+    /* ── FAB ── */
+    .fab {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #e94560, #c62a47);
+      border: none;
+      border-radius: 18px;
+      color: white;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(233,69,96,0.5);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s;
+      margin-top: -28px;
+    }
+
+    .fab:hover { transform: scale(1.08); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal {
+      background: #12122a;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px 28px 0 0;
+      padding: 12px 24px 40px;
+      width: 100%;
+      max-width: 480px;
+      animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .modal h3 {
+      font-size: 20px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .input-group { margin-bottom: 16px; }
+
+    .input-group label {
+      display: block;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      color: white;
+      font-size: 15px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #e94560;
+      background: rgba(233,69,96,0.06);
+    }
+
+    .input-group select option { background: #12122a; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #e94560, #c62a47);
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 8px 20px rgba(233,69,96,0.35);
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-ghost {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      color: rgba(255,255,255,0.5);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: white; }
+
+    .error-text {
+      color: #ff6b6b;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    .hidden { display: none; }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 12px;
+      height: 90px;
+      margin-bottom: 12px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-row">
+      <div class="user-info">
+        <div class="avatar" id="user-avatar">?</div>
+        <div class="user-text">
+          <h3 id="user-name">Loading...</h3>
+          <p id="user-email">fairsplit</p>
+        </div>
+      </div>
+      <div class="notif-btn">🔔</div>
+    </div>
+
+    <!-- HERO BALANCE CARD -->
+    <div class="hero-card">
+      <div class="hero-label">Total Outstanding</div>
+      <div class="hero-amount" id="hero-amount">₹0</div>
+      <div class="hero-sub" id="hero-sub">You're all settled up! 🎉</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-label">You Owe</div>
+          <div class="stat-value" id="total-owed">₹0</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-label">You Get Back</div>
+          <div class="stat-value" id="total-get">₹0</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-label">Groups</div>
+          <div class="stat-value" id="total-groups">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Quick Actions -->
+    <div style="margin-bottom: 24px;">
+      <div class="section-title" style="margin-bottom:14px;">Quick Actions</div>
+      <div class="quick-actions">
+        <div class="quick-action" id="create-group-btn">
+          <div class="qa-icon">👥</div>
+          <div class="qa-label">New Group</div>
+        </div>
+        <div class="quick-action" onclick="window.location.href='/assets/group.html'">
+  <div class="qa-icon">💸</div>
+  <div class="qa-label">Add Expense</div>
+</div>
+        <div class="quick-action">
+          <div class="qa-icon">💳</div>
+          <div class="qa-label">Settle Up</div>
+        </div>
+        <div class="quick-action" id="logout-btn">
+          <div class="qa-icon">🚪</div>
+          <div class="qa-label">Logout</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Groups -->
+    <div class="section-header">
+      <div class="section-title">Your Groups</div>
+      <div class="see-all" id="create-group-btn2">+ New</div>
+    </div>
+
+    <div id="groups-list">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="window.location.href='/assets/dashboard.html'">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" onclick="document.getElementById('group-modal').classList.remove('hidden')">
+      <div class="nav-icon">👥</div>
+      <div class="nav-label">Groups</div>
+    </div>
+    <button class="fab" id="create-group-btn3">+</button>
+    <div class="nav-item" onclick="window.location.href='/assets/analytics.html'">
+      <div class="nav-icon">📊</div>
+      <div class="nav-label">Analytics</div>
+    </div>
+    <div class="nav-item" onclick="window.location.href='/assets/profile.html'">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">Profile</div>
+    </div>
+  </div>
+
+  <!-- CREATE GROUP MODAL -->
+  <div class="modal-overlay hidden" id="group-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>Create New Group</h3>
+
+      <div class="input-group">
+        <label>Group Name</label>
+        <input type="text" id="group-name" placeholder="e.g. Goa Trip 2025"/>
+      </div>
+
+      <div class="input-group">
+        <label>Category</label>
+        <select id="group-type">
+          <option value="✈️">✈️ Trip / Travel</option>
+          <option value="🏠">🏠 Home / Flatmates</option>
+          <option value="🍕">🍕 Food & Dining</option>
+          <option value="🎉">🎉 Event / Party</option>
+          <option value="💼">💼 Work / Office</option>
+          <option value="👫">👫 Friends</option>
+          <option value="🎓">🎓 College</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Add Members (comma separated emails)</label>
+        <input type="text" id="group-members" placeholder="friend@gmail.com, another@gmail.com"/>
+      </div>
+
+      <button class="btn-primary" id="create-group-submit">Create Group 🚀</button>
+      <button class="btn-ghost" id="close-group-modal">Cancel</button>
+      <p class="error-text" id="group-error"></p>
+    </div>
+  </div>
+
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FairSplit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bubble {
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.08;
+      animation: float 8s ease-in-out infinite;
+    }
+    .bubble:nth-child(1) { width: 300px; height: 300px; background: #e94560; top: -100px; left: -100px; animation-delay: 0s; }
+    .bubble:nth-child(2) { width: 200px; height: 200px; background: #0f3460; bottom: -50px; right: -50px; animation-delay: 2s; }
+    .bubble:nth-child(3) { width: 150px; height: 150px; background: #533483; top: 50%; left: 80%; animation-delay: 4s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      animation: slideUp 0.6s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .logo-section { text-align: center; margin-bottom: 32px; }
+    .logo-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #e94560, #c62a47);
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 36px;
+      box-shadow: 0 20px 40px rgba(233, 69, 96, 0.4);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 20px 40px rgba(233, 69, 96, 0.4); }
+      50% { box-shadow: 0 20px 60px rgba(233, 69, 96, 0.7); }
+    }
+    .logo-section h1 { font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: -1px; }
+    .logo-section h1 span { color: #e94560; }
+    .logo-section p { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 6px; font-weight: 600; }
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+    .card-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 24px; text-align: center; }
+    .input-group { margin-bottom: 16px; }
+    .input-group label {
+      display: block; color: rgba(255,255,255,0.6);
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+    }
+    .input-group input {
+      width: 100%; padding: 14px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: #ffffff;
+      font-size: 15px; font-family: 'Nunito', sans-serif;
+      font-weight: 600; outline: none; transition: all 0.3s ease;
+    }
+    .input-group input:focus {
+      border-color: #e94560;
+      background: rgba(233,69,96,0.08);
+      box-shadow: 0 0 0 3px rgba(233,69,96,0.15);
+    }
+    .input-group input::placeholder { color: rgba(255,255,255,0.25); }
+    .btn-primary {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #e94560, #c62a47);
+      border: none; border-radius: 12px; color: white;
+      font-size: 16px; font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer; margin-top: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(233,69,96,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-outline {
+      width: 100%; padding: 14px;
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      border-radius: 12px; color: rgba(255,255,255,0.7);
+      font-size: 15px; font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer; margin-top: 12px; transition: all 0.3s ease;
+    }
+    .btn-outline:hover { border-color: #e94560; color: #e94560; }
+    .error-text { color: #ff6b6b; font-size: 13px; font-weight: 600; text-align: center; margin-top: 12px; min-height: 20px; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .divider hr { flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.1); }
+    .divider span { color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 600; }
+    .hidden { display: none; }
+    .features { display: flex; justify-content: space-around; margin-top: 28px; }
+    .feature-item { text-align: center; }
+    .feature-item .icon { font-size: 22px; margin-bottom: 4px; }
+    .feature-item p { color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+
+  <div class="container">
+    <div class="logo-section">
+      <div class="logo-icon">💸</div>
+      <h1>Fair<span>Split</span></h1>
+      <p>Split smarter. Settle faster.</p>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login-section">
+      <div class="card">
+        <p class="card-title">Welcome Back 👋</p>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com"/>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password"/>
+        </div>
+        <button class="btn-primary" id="login-btn">Login →</button>
+        <div class="divider"><hr/><span>OR</span><hr/></div>
+        <button class="btn-outline" id="show-register-btn">Create New Account</button>
+        <p class="error-text" id="login-error"></p>
+      </div>
+      <div class="features">
+        <div class="feature-item"><div class="icon">👥</div><p>Groups</p></div>
+        <div class="feature-item"><div class="icon">⚖️</div><p>Fair Split</p></div>
+        <div class="feature-item"><div class="icon">✅</div><p>Settle Up</p></div>
+        <div class="feature-item"><div class="icon">📊</div><p>Analytics</p></div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register-section" class="hidden">
+      <div class="card">
+        <p class="card-title">Create Account 🚀</p>
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="register-name" placeholder="Your full name"/>
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <input type="email" id="register-email" placeholder="you@example.com"/>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="register-password" placeholder="Min. 6 characters"/>
+        </div>
+        <button class="btn-primary" id="register-btn">Create Account →</button>
+        <div class="divider"><hr/><span>OR</span><hr/></div>
+        <button class="btn-outline" id="show-login-btn">Already have an account? Login</button>
+        <p class="error-text" id="register-error"></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/js/firebase-config.js"></script>
+<script type="module" src="/assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FairSplit - Group</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/style.css"/>
+  <style>
+    @keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.sync-dot {
+  width: 8px; height: 8px;
+  background: #00c896;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+    body { padding: 0; margin: 0; min-height: 100vh; background: #070b14; }
+
+    .header {
+      background: rgba(7,11,20,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 18px 20px;
+      display: flex; align-items: center; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; color: #f0f4ff;
+      font-size: 16px; width: 36px; height: 36px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s;
+    }
+
+    .back-btn:hover { background: rgba(0,200,150,0.1); border-color: rgba(0,200,150,0.2); }
+    .header h2 { font-size: 18px; font-weight: 700; color: #f0f4ff; flex: 1; }
+
+    .content { padding: 20px; padding-bottom: 100px; }
+
+    .balance-card {
+      background: linear-gradient(135deg, rgba(0,200,150,0.12), rgba(0,168,125,0.06));
+      border: 1px solid rgba(0,200,150,0.2);
+      border-radius: 20px; padding: 20px;
+      margin-bottom: 20px; text-align: center;
+    }
+
+    .balance-card h3 { color: #4a5568; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 600; }
+    .balance-card .net { font-size: 30px; font-weight: 700; color: #f0f4ff; }
+
+    .tabs {
+      display: flex; background: #111827;
+      border-radius: 12px; padding: 4px; margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      color: #4a5568; cursor: pointer; transition: all 0.25s;
+      border: none; background: transparent; font-family: 'DM Sans', sans-serif;
+    }
+
+    .tab.active { background: #00c896; color: #070b14; }
+
+    .section-title { font-size: 15px; font-weight: 700; color: #f0f4ff; margin-bottom: 14px; }
+
+    .expense-card {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 16px; margin-bottom: 10px;
+      transition: all 0.25s;
+    }
+
+    .expense-card:hover { background: #161f30; border-color: rgba(0,200,150,0.1); }
+
+    .expense-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .expense-name { font-size: 15px; font-weight: 700; color: #f0f4ff; }
+    .expense-amount { font-size: 17px; font-weight: 700; color: #00c896; }
+    .expense-meta { font-size: 11px; color: #4a5568; font-weight: 500; margin-top: 2px; }
+    .expense-paid { font-size: 12px; color: #8896b3; font-weight: 500; margin-bottom: 8px; }
+
+    .splits-row { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+    .split-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 11px; font-weight: 600; color: #8896b3;
+    }
+
+    .empty-state { text-align: center; padding: 40px 20px; }
+    .empty-state .icon { font-size: 44px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; font-weight: 500; color: #4a5568; }
+
+    .balance-positive { color: #10d98a !important; font-weight: 700; }
+    .balance-negative { color: #f43f5e !important; font-weight: 700; }
+    .balance-zero { color: #4a5568 !important; font-weight: 600; }
+
+    .fab-btn {
+      position: fixed; bottom: 28px; right: 22px;
+      width: 56px; height: 56px;
+      background: #00c896; border: none; border-radius: 17px;
+      color: #070b14; font-size: 26px; cursor: pointer;
+      box-shadow: 0 0 28px rgba(0,200,150,0.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s; z-index: 100; font-weight: 700;
+    }
+
+    .fab-btn:hover { transform: scale(1.08); box-shadow: 0 0 40px rgba(0,200,150,0.5); }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
+      z-index: 200; display: flex; align-items: flex-end; justify-content: center;
+    }
+
+    .modal {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px 28px 0 0;
+      padding: 12px 24px 40px; width: 100%; max-width: 500px;
+      animation: slideUp 0.35s ease-out;
+    }
+
+    .modal-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 0 auto 20px; }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal h3 { font-size: 19px; font-weight: 700; color: #f0f4ff; margin-bottom: 18px; }
+
+    .input-group { margin-bottom: 14px; }
+    .input-group label { display: block; color: #4a5568; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .input-group input, .input-group select {
+      width: 100%; padding: 13px 16px;
+      background: #0d1321; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; color: #f0f4ff;
+      font-size: 15px; font-family: 'DM Sans', sans-serif;
+      font-weight: 500; outline: none; transition: all 0.25s;
+    }
+    .input-group input:focus, .input-group select:focus { border-color: #00c896; box-shadow: 0 0 0 3px rgba(0,200,150,0.1); }
+    .input-group select option { background: #111827; }
+
+    .btn-primary {
+      width: 100%; padding: 14px; background: #00c896;
+      border: none; border-radius: 12px; color: #070b14;
+      font-size: 15px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; margin-bottom: 10px;
+      box-shadow: 0 0 20px rgba(0,200,150,0.25); transition: all 0.25s;
+    }
+    .btn-primary:hover { background: #00dda6; transform: translateY(-1px); }
+
+    .btn-ghost {
+      width: 100%; padding: 13px; background: transparent;
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+      color: #4a5568; font-size: 14px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.25s;
+    }
+    .btn-ghost:hover { border-color: rgba(0,200,150,0.2); color: #00c896; }
+
+    .error-text { color: #f43f5e; font-size: 13px; font-weight: 600; text-align: center; margin-top: 10px; min-height: 18px; }
+    .hidden { display: none !important; }
+  </style>
+  <div class="header">
+  <button class="back-btn" onclick="window.location.href='/assets/dashboard.html'">←</button>
+  <h2 id="group-title">Group</h2>
+  <span style="font-size:11px;color:#00c896;font-weight:600;display:flex;align-items:center;gap:4px;">
+    <span class="sync-dot"></span>Live
+  </span>
+  <button class="back-btn" onclick="toggleGroupMenu()" title="Options">⋮</button>
+  <button class="back-btn" onclick="window.location.href='/assets/settlement.html'" title="Settle Up">💳</button>
+</div>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='/assets/dashboard.html'">←</button>
+    <h2 id="group-title">Group</h2>
+    <button class="back-btn" onclick="toggleGroupMenu()" title="Options">⋮</button>
+    <button class="back-btn" onclick="window.location.href='/assets/settlement.html'" title="Settle Up">💳</button>
+  </div>
+
+  <!-- Group Options Menu -->
+  <div id="group-menu" class="hidden" style="
+    position:fixed;top:70px;right:16px;
+    background:#1a2540;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;padding:8px;
+    z-index:100;min-width:200px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+    <div onclick="showAddMemberModal()" style="padding:12px 16px;color:#f0f4ff;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,200,150,0.1)'" onmouseout="this.style.background='transparent'">
+      👤 Add Member
+    </div>
+    <div onclick="showRemoveMemberModal()" style="padding:12px 16px;color:#f0f4ff;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,200,150,0.1)'" onmouseout="this.style.background='transparent'">
+      ❌ Remove Member
+    </div>
+    <div onclick="deleteGroup()" style="padding:12px 16px;color:#f43f5e;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='rgba(244,63,94,0.1)'" onmouseout="this.style.background='transparent'">
+      🗑️ Delete Group
+    </div>
+  </div>
+
+  <!-- Add Member Modal -->
+  <div class="modal-overlay hidden" id="add-member-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>👤 Add Member</h3>
+      <div class="input-group">
+        <label>Member Email</label>
+        <input type="email" id="new-member-email" placeholder="friend@gmail.com"/>
+      </div>
+      <button class="btn-primary" id="add-member-submit">Add Member ✅</button>
+      <button class="btn-ghost" id="close-add-member">Cancel</button>
+      <p class="error-text" id="add-member-error"></p>
+    </div>
+  </div>
+
+  <!-- Remove Member Modal -->
+  <div class="modal-overlay hidden" id="remove-member-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>❌ Remove Member</h3>
+      <div class="input-group">
+        <label>Select Member to Remove</label>
+        <select id="remove-member-select"></select>
+      </div>
+      <button class="btn-primary" id="remove-member-submit">Remove Member</button>
+      <button class="btn-ghost" id="close-remove-member">Cancel</button>
+      <p class="error-text" id="remove-member-error"></p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="balance-card">
+      <h3>Your Net Balance</h3>
+      <div class="net" id="net-balance">₹0</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-expenses" onclick="showTab('expenses')">💸 Expenses</button>
+      <button class="tab" id="tab-balances" onclick="showTab('balances')">⚖️ Balances</button>
+    </div>
+
+    <div id="expenses-tab">
+      <div class="section-title">All Expenses</div>
+      <div id="expenses-list">
+        <div class="empty-state">
+          <div class="icon">💸</div>
+          <p>No expenses yet!<br/>Tap + to add one.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="balances-tab" class="hidden">
+      <div class="section-title">Member Balances</div>
+      <div id="balances-list"></div>
+    </div>
+  </div>
+
+  <button class="fab-btn" id="add-expense-btn">+</button>
+
+  <div class="modal-overlay hidden" id="expense-modal">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h3>💸 Add Expense</h3>
+      <div class="input-group">
+        <label>Description</label>
+        <input type="text" id="expense-name" placeholder="e.g. Dinner, Hotel, Petrol"/>
+      </div>
+      <div class="input-group">
+        <label>Total Amount (₹)</label>
+        <input type="number" id="expense-amount" placeholder="0"/>
+      </div>
+      <div class="input-group">
+        <label>Paid By</label>
+        <select id="expense-paidby"></select>
+      </div>
+      <div class="input-group">
+        <label>Split Type</label>
+        <select id="split-type">
+          <option value="equal">⚖️ Equal Split</option>
+          <option value="percentage">📊 Percentage Split</option>
+          <option value="shares">🔢 Shares Split</option>
+        </select>
+      </div>
+      <div id="split-inputs"></div>
+      <button class="btn-primary" id="add-expense-submit">Add Expense ✅</button>
+      <button class="btn-ghost" id="close-expense-modal">Cancel</button>
+      <p class="error-text" id="expense-error"></p>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/js/firebase-config.js"></script>
+  <script type="module" src="/assets/js/group.js"></script>
+  <!-- Edit Expense Modal -->
+<div class="modal-overlay hidden" id="edit-expense-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>✏️ Edit Expense</h3>
+    <input type="hidden" id="edit-expense-id"/>
+    <div class="input-group">
+      <label>Description</label>
+      <input type="text" id="edit-expense-name" placeholder="Expense name"/>
+    </div>
+    <div class="input-group">
+      <label>Amount (₹)</label>
+      <input type="number" id="edit-expense-amount" placeholder="0"/>
+    </div>
+    <p style="color:#8896b3;font-size:12px;font-weight:500;margin-bottom:14px;">
+      ⚠️ Splits will be recalculated proportionally
+    </p>
+    <button class="btn-primary" id="save-edit-expense">Save Changes ✅</button>
+    <button class="btn-ghost" id="close-edit-expense">Cancel</button>
+    <p class="error-text" id="edit-expense-error"></p>
+  </div>
+</div>
+</body>
+</html>

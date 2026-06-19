@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FairSplit - Settlement</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { padding: 0; margin: 0; min-height: 100vh; background: #070b14; }
+
+    .header {
+      background: rgba(7,11,20,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 18px 20px;
+      display: flex; align-items: center; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; color: #f0f4ff;
+      font-size: 16px; width: 36px; height: 36px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    .header h2 { font-size: 18px; font-weight: 700; color: #f0f4ff; }
+    .content { padding: 20px; padding-bottom: 40px; }
+
+    .algo-badge {
+      background: rgba(0,200,150,0.06);
+      border: 1px solid rgba(0,200,150,0.15);
+      border-radius: 16px; padding: 16px;
+      margin-bottom: 20px; text-align: center;
+    }
+    .algo-badge h3 { color: #00c896; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .algo-badge p { color: #4a5568; font-size: 12px; font-weight: 500; }
+
+    /* Tabs */
+    .tabs {
+      display: flex; background: #111827;
+      border-radius: 12px; padding: 4px; margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center;
+      border-radius: 10px; font-size: 13px; font-weight: 600;
+      color: #4a5568; cursor: pointer; transition: all 0.25s;
+      border: none; background: transparent; font-family: 'DM Sans', sans-serif;
+    }
+    .tab.active { background: #00c896; color: #070b14; }
+
+    /* Chart Section */
+    .chart-container {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px; padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .chart-title {
+      font-size: 14px; font-weight: 700; color: #f0f4ff;
+      margin-bottom: 16px; text-align: center;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 220px;
+    }
+
+    /* Balance bars */
+    .balance-bars { margin-bottom: 16px; }
+
+    .balance-bar-item {
+      display: flex; align-items: center;
+      gap: 10px; margin-bottom: 12px;
+    }
+
+    .bar-name {
+      font-size: 12px; font-weight: 600; color: #8896b3;
+      width: 80px; flex-shrink: 0; text-align: right;
+    }
+
+    .bar-track {
+      flex: 1; height: 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px; position: relative; overflow: visible;
+    }
+
+    .bar-fill {
+      height: 100%; border-radius: 4px;
+      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bar-fill.positive { background: linear-gradient(90deg, #00c896, #00dda6); }
+    .bar-fill.negative { background: linear-gradient(90deg, #f43f5e, #ff6b6b); }
+
+    .bar-value {
+      font-size: 12px; font-weight: 700;
+      width: 70px; flex-shrink: 0;
+    }
+
+    /* Settlement Cards */
+    .section-title { font-size: 15px; font-weight: 700; color: #f0f4ff; margin-bottom: 14px; }
+
+    .settlement-card {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px; padding: 18px; margin-bottom: 12px;
+      transition: all 0.25s;
+    }
+
+    .settlement-card:hover { background: #161f30; border-color: rgba(0,200,150,0.1); }
+
+    .settlement-top {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 6px;
+    }
+
+    .settlement-flow { display: flex; align-items: center; gap: 10px; flex: 1; }
+
+    .person-chip {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 6px 12px;
+      font-size: 13px; font-weight: 600; color: #f0f4ff;
+    }
+
+    .arrow { color: #00c896; font-size: 16px; font-weight: 700; }
+    .settlement-amount { font-size: 19px; font-weight: 700; color: #00c896; }
+    .settlement-sub { font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 14px; }
+
+    .status-row { display: flex; gap: 8px; }
+
+    .status-btn {
+      flex: 1; padding: 9px; border-radius: 10px; border: none;
+      font-size: 12px; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.25s;
+    }
+
+    .status-btn.pending { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+    .status-btn.paid { background: rgba(0,200,150,0.1); color: #00c896; border: 1px solid rgba(0,200,150,0.2); }
+    .status-btn.confirmed { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+    .status-btn.active { filter: brightness(1.4); transform: scale(1.03); }
+
+    /* Summary stats */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 14px; text-align: center;
+    }
+
+    .stat-card .sv { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .stat-card .sl { font-size: 10px; color: #4a5568; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='/assets/group.html'">←</button>
+    <h2>💳 Settle Up</h2>
+  </div>
+
+  <div class="content">
+
+    <!-- Algorithm Badge -->
+    <div class="algo-badge">
+      <h3>🧮 Min Cash Flow Algorithm</h3>
+      <p>Minimizing transactions to settle all debts optimally</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="sv" style="color:#00c896;" id="stat-transactions">0</div>
+        <div class="sl">Transactions</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" style="color:#f59e0b;" id="stat-saved">0</div>
+        <div class="sl">Saved</div>
+      </div>
+      <div class="stat-card">
+        <div class="sv" style="color:#3b82f6;" id="stat-total">₹0</div>
+        <div class="sl">Total</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-settlements" onclick="showTab('settlements')">💳 Settlements</button>
+      <button class="tab" id="tab-charts" onclick="showTab('charts')">📊 Charts</button>
+    </div>
+
+    <!-- Settlements Tab -->
+    <div id="settlements-tab">
+      <div class="section-title">Who Pays Whom</div>
+      <div id="settlements-list">
+        <p style="color:#4a5568;text-align:center;padding:40px;font-weight:500;">Calculating...</p>
+      </div>
+    </div>
+
+    <!-- Charts Tab -->
+    <div id="charts-tab" class="hidden">
+
+      <!-- Bar Chart - Balances -->
+      <div class="chart-container">
+        <div class="chart-title">💰 Member Balances</div>
+        <div class="chart-wrapper">
+          <canvas id="balanceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Pie Chart - Expense Distribution -->
+      <div class="chart-container">
+        <div class="chart-title">🥧 Expense Distribution</div>
+        <div class="chart-wrapper">
+          <canvas id="expenseChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Custom Balance Bars -->
+      <div class="chart-container">
+        <div class="chart-title">📊 Net Balance Overview</div>
+        <div class="balance-bars" id="balance-bars"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="module" src="/assets/js/firebase-config.js"></script>
+  <script type="module" src="/assets/js/settlement.js"></script>
+</body>
+</html>
